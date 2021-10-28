@@ -1,20 +1,17 @@
 import io
 import torch
 from flask import Flask, render_template, request
-from model import Model, transformation
 from PIL import Image
+from model import Model, transformation
 
 app = Flask(__name__)
 
+model = Model()
+model.load_state_dict(torch.load("weights.pth"))
 
 @app.route("/")
 def index():
     return render_template("index.html")
-
-
-model = Model()
-model.load_state_dict(torch.load("lenet_epoch=12_test_acc=0.991.pth"))
-
 
 @app.route("/data", methods=["POST"])
 def data():
@@ -25,4 +22,3 @@ def data():
         preds = torch.argmax(preds, axis=1)
         print(preds[0].item())
         return {"data": preds[0].item()}
-    return {"data": 1 + 1}
